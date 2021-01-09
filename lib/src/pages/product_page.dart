@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_crud/src/models/product_model.dart';
+import 'package:flutter_crud/src/providers/product_provider.dart';
 import 'package:flutter_crud/src/utils/utils.dart' as utils;
 
 
@@ -9,7 +11,12 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
+
   final formKey = GlobalKey<FormState>();
+
+  ProductModel  product = new ProductModel();
+
+  final productProvider = new ProductProvider();
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +48,7 @@ class _ProductPageState extends State<ProductPage> {
               children: <Widget>[
                 _createName(),
                 _createPrice(),
+                _createAvailable(),
                 _createButton()
               ],
             ),
@@ -53,10 +61,12 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _createName() {
     return TextFormField(
+      initialValue: product.title,
       textCapitalization: TextCapitalization.sentences,
       decoration: InputDecoration(
         labelText: 'Product',
       ),
+      onSaved: (newValue) => product.title = newValue,
       validator: (value) {
         if (value.length < 3) {
           return 'Enter product name';
@@ -69,10 +79,12 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _createPrice() {
     return TextFormField(
+      initialValue: product.value.toString(),
       keyboardType: TextInputType.numberWithOptions(decimal: true),
       decoration: InputDecoration(
         labelText: 'Price',
       ),
+      onSaved: (newValue) => product.value = double.parse(newValue),
       validator: (value) {
         if (utils.isNumeric(value)) {
           return null;
@@ -96,5 +108,20 @@ class _ProductPageState extends State<ProductPage> {
 
   void _submit(){
     if (!formKey.currentState.validate()) return;
+
+    formKey.currentState.save();
+
+    productProvider.createProduct(product);
+  }
+
+  Widget _createAvailable() {
+    return SwitchListTile(
+      value: product.available,
+      title: Text('Available'),
+      activeColor: Colors.deepPurple,
+      onChanged: (value) => setState((){
+        product.available = value;
+      }),
+    );
   }
 }
