@@ -3,7 +3,12 @@ import 'package:flutter_crud/src/blocs/provider.dart';
 import 'package:flutter_crud/src/models/product_model.dart';
 import 'package:flutter_crud/src/providers/product_provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final productProvider = new ProductProvider();
 
   @override
@@ -23,7 +28,8 @@ class HomePage extends StatelessWidget {
     return FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.deepPurple,
-        onPressed: () => Navigator.pushNamed(context, 'product'));
+        onPressed: () => Navigator.pushNamed(context, 'product').then((value){setState(() { });})
+    );
   }
 
   Widget _createList() {
@@ -62,12 +68,12 @@ class HomePage extends StatelessWidget {
         ),
       ),
       onDismissed: (direction) {
-        //TODO: Delete product
+        productProvider.deleteProduct(product.id);
       },
       child: ListTile(
         title: Text('${product.title} - ${product.value}'),
         subtitle: Text(product.id),
-        onTap: () => Navigator.pushNamed(context, 'product'),
+        onTap: () => Navigator.pushNamed(context, 'product',arguments: product).then((value){setState(() { });}),
       ),
     );
   }

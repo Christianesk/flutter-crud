@@ -20,6 +20,14 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
+
+
+    final ProductModel prodData = ModalRoute.of(context).settings.arguments;
+
+    if (prodData != null) {
+      product = prodData;
+    }
+
     return Scaffold(
 
       appBar: AppBar(
@@ -100,7 +108,7 @@ class _ProductPageState extends State<ProductPage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       color: Colors.deepPurple,
       textColor: Colors.white,
-      label: Text('Save'),
+      label: product.id == null ?Text('Save'):Text('Edit'),
       icon: Icon(Icons.save),
       onPressed: _submit,
     );
@@ -110,8 +118,11 @@ class _ProductPageState extends State<ProductPage> {
     if (!formKey.currentState.validate()) return;
 
     formKey.currentState.save();
-
-    productProvider.createProduct(product);
+    if (product.id == null) {
+      productProvider.createProduct(product);
+    }else {
+      productProvider.editProduct(product);
+    }
   }
 
   Widget _createAvailable() {
