@@ -14,7 +14,11 @@ class _ProductPageState extends State<ProductPage> {
 
   final formKey = GlobalKey<FormState>();
 
+  final scaffoldKey = GlobalKey<ScaffoldState>();
+
   ProductModel  product = new ProductModel();
+
+  bool _saving = false;
 
   final productProvider = new ProductProvider();
 
@@ -29,7 +33,7 @@ class _ProductPageState extends State<ProductPage> {
     }
 
     return Scaffold(
-
+      key: scaffoldKey,
       appBar: AppBar(
         title: Text('Product'),
         actions: <Widget>[
@@ -110,7 +114,7 @@ class _ProductPageState extends State<ProductPage> {
       textColor: Colors.white,
       label: product.id == null ?Text('Save'):Text('Edit'),
       icon: Icon(Icons.save),
-      onPressed: _submit,
+      onPressed: (_saving)? null : _submit,
     );
   }
 
@@ -118,11 +122,21 @@ class _ProductPageState extends State<ProductPage> {
     if (!formKey.currentState.validate()) return;
 
     formKey.currentState.save();
+    
+    setState(() =>_saving = true);
+
     if (product.id == null) {
       productProvider.createProduct(product);
+      showSnackbar('Saved record!');
     }else {
       productProvider.editProduct(product);
+      showSnackbar('Modified record!');
     }
+    
+
+    Navigator.pop(context);
+
+    
   }
 
   Widget _createAvailable() {
@@ -134,5 +148,14 @@ class _ProductPageState extends State<ProductPage> {
         product.available = value;
       }),
     );
+  }
+
+  void showSnackbar(String message){
+    final snackbar = SnackBar(
+      content: Text(message),
+      duration: Duration(milliseconds: 3500),
+    );
+
+    scaffoldKey.currentState.showSnackBar(snackbar);
   }
 }
