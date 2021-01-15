@@ -28,8 +28,9 @@ class _HomePageState extends State<HomePage> {
     return FloatingActionButton(
         child: Icon(Icons.add),
         backgroundColor: Colors.deepPurple,
-        onPressed: () => Navigator.pushNamed(context, 'product').then((value){setState(() { });})
-    );
+        onPressed: () => Navigator.pushNamed(context, 'product').then((value) {
+              setState(() {});
+            }));
   }
 
   Widget _createList() {
@@ -54,27 +55,45 @@ class _HomePageState extends State<HomePage> {
 
   Widget _createItem(BuildContext context, ProductModel product) {
     return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Icon(Icons.delete_forever_outlined,
-                color: Colors.white, size: 35.0),
-            SizedBox(width: 150.0),
-            Icon(Icons.delete_forever_outlined, color: Colors.white, size: 35.0)
-          ],
+        key: UniqueKey(),
+        background: Container(
+          color: Colors.red,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              Icon(Icons.delete_forever_outlined,
+                  color: Colors.white, size: 35.0),
+              SizedBox(width: 150.0),
+              Icon(Icons.delete_forever_outlined,
+                  color: Colors.white, size: 35.0)
+            ],
+          ),
         ),
-      ),
-      onDismissed: (direction) {
-        productProvider.deleteProduct(product.id);
-      },
-      child: ListTile(
-        title: Text('${product.title} - ${product.value}'),
-        subtitle: Text(product.id),
-        onTap: () => Navigator.pushNamed(context, 'product',arguments: product).then((value){setState(() { });}),
-      ),
-    );
+        onDismissed: (direction) {
+          productProvider.deleteProduct(product.id);
+        },
+        child: Card(
+          child: Column(
+            children: <Widget>[
+              (product.photoUrl == null)
+                  ? Image(image: AssetImage('assets/img/no-image.png'))
+                  : FadeInImage(
+                      image: NetworkImage(product.photoUrl),
+                      placeholder: AssetImage('assets/img/jar-loading.gif'),
+                      height: 300.0,
+                      width: double.infinity,
+                      fit: BoxFit.cover),
+              ListTile(
+                title: Text('${product.title} - ${product.value}'),
+                subtitle: Text(product.id),
+                onTap: () =>
+                    Navigator.pushNamed(context, 'product', arguments: product)
+                        .then((value) {
+                  setState(() {});
+                }),
+              ),
+            ],
+          ),
+        ));
   }
 }

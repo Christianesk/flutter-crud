@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:mime_type/mime_type.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter_crud/src/config/config.dart';
 import 'package:flutter_crud/src/models/product_model.dart';
 
@@ -60,5 +63,40 @@ class ProductProvider {
     final resp = await http.delete(url);
 
     return 1;
+  }
+
+  Future<String> uploadImage(File image) async {
+    final url = Uri.parse(urlCloudinary);
+
+    final mimeType = mime(image.path).split('/');
+
+    final imageUploadRequest = http.MultipartRequest(
+      'POST',
+      url
+    );
+
+    final file = await http.MultipartFile.fromPath(
+      'file',
+      image.path,
+      contentType: MediaType( mimeType[0], mimeType[1])
+    );
+
+    imageUploadRequest.files.add(file);
+
+    final streamResponse = await imageUploadRequest.send();
+
+    final res = await http.Response.fromStream(streamResponse);
+
+    if (res.statusCode != 200 && res.statusCode != 201) {
+      print('salio mal');
+      print(res.body);
+      return null;
+    }
+
+    final resData = json.decode(res.body);
+
+    print(resData);
+    return resData['secure_url'];
+
   }
 }
