@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/src/blocs/login_bloc.dart';
 import 'package:flutter_crud/src/blocs/provider.dart';
+import 'package:flutter_crud/src/providers/user_provider.dart';
 
 
-class LoginPage extends StatelessWidget {
+class SignupPage extends StatelessWidget {
+
+  final userProvider = new UserProvider();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -97,7 +101,7 @@ class LoginPage extends StatelessWidget {
             ),
             child: Column(
               children: <Widget>[
-                Text('Login', style: TextStyle(fontSize: 20.0)),
+                Text('Sign Up', style: TextStyle(fontSize: 20.0)),
                 SizedBox(height: 60.0),
                 _createEmail(bloc),
                 SizedBox(height: 30.0),
@@ -108,8 +112,8 @@ class LoginPage extends StatelessWidget {
             ),
           ),
           FlatButton(
-            child: Text('Create a new Account'),
-            onPressed: () => Navigator.pushReplacementNamed(context, 'signup'),
+            child: Text('Do you already have an account?'),
+            onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
           ),
           SizedBox(height: 100.0)
         ],
@@ -174,7 +178,7 @@ class LoginPage extends StatelessWidget {
         return RaisedButton(
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 80.0,vertical: 15.0),
-            child: Text('Sign in'),
+            child: Text('Sign up'),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0)
@@ -182,16 +186,18 @@ class LoginPage extends StatelessWidget {
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasData ? () =>_Login(context, bloc) : null,
+          onPressed: snapshot.hasData ? () =>_signUp(context, bloc) : null,
         );
       },
     );
   }
 
 
-  _Login(BuildContext context,LoginBloc bloc){
+  _signUp(BuildContext context,LoginBloc bloc){
 
-    Navigator.pushReplacementNamed(context, 'home');
+    userProvider.createUser(bloc.email, bloc.password);
+
+    Navigator.pushReplacementNamed(context, 'login');
 
   }
 }
