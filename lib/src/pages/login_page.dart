@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/src/blocs/login_bloc.dart';
 import 'package:flutter_crud/src/blocs/provider.dart';
+import 'package:flutter_crud/src/providers/user_provider.dart';
 
 
 class LoginPage extends StatelessWidget {
+
+  final userProvider = new UserProvider();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -191,7 +194,9 @@ class LoginPage extends StatelessWidget {
 
   _Login(BuildContext context,LoginBloc bloc){
 
-    Navigator.pushReplacementNamed(context, 'home');
+    userProvider.login(bloc.email, bloc.password);
+
+    //Navigator.pushReplacementNamed(context, 'home');
 
   }
 }
