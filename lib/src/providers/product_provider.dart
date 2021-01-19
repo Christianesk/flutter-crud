@@ -18,8 +18,6 @@ class ProductProvider {
 
     final decodedData = json.decode(resp.body);
 
-    print(decodedData);
-
     return true;
   }
 
@@ -30,8 +28,6 @@ class ProductProvider {
     final resp = await http.put(url, body: productModelToJson(product));
 
     final decodedData = json.decode(resp.body);
-
-    print(decodedData);
 
     return true;
   }
@@ -95,7 +91,6 @@ class ProductProvider {
 
     final resData = json.decode(res.body);
 
-    print(resData);
     return resData['secure_url'];
 
   }
