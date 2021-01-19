@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter_crud/src/user_preferences/user_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime_type/mime_type.dart';
 import 'package:http_parser/http_parser.dart';
@@ -8,9 +9,10 @@ import 'package:flutter_crud/src/models/product_model.dart';
 
 class ProductProvider {
   final String _url = urlFirebase;
+  final _prefs = new UserPreferences();
 
   Future<bool> createProduct(ProductModel product) async {
-    final url = '$_url/products.json';
+    final url = '$_url/products.json?auth=${_prefs.token}';
 
     final resp = await http.post(url, body: productModelToJson(product));
 
@@ -23,7 +25,7 @@ class ProductProvider {
 
   Future<bool> editProduct(ProductModel product) async {
 
-    final url = '$_url/products/${product.id}.json';
+    final url = '$_url/products/${product.id}.json?auth=${_prefs.token}';
 
     final resp = await http.put(url, body: productModelToJson(product));
 
@@ -35,7 +37,7 @@ class ProductProvider {
   }
 
   Future<List<ProductModel>> getProducts() async {
-    final url = '$_url/products.json';
+    final url = '$_url/products.json?auth=${_prefs.token}';
 
     final resp = await http.get(url);
 
@@ -58,7 +60,7 @@ class ProductProvider {
 
   Future<int> deleteProduct(String id) async {
 
-    final url = '$_url/products/$id.json';
+    final url = '$_url/products/$id.json?auth=${_prefs.token}';
 
     final resp = await http.delete(url);
 
@@ -88,8 +90,6 @@ class ProductProvider {
     final res = await http.Response.fromStream(streamResponse);
 
     if (res.statusCode != 200 && res.statusCode != 201) {
-      print('salio mal');
-      print(res.body);
       return null;
     }
 

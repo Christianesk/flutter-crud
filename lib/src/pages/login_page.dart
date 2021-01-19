@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_crud/src/blocs/login_bloc.dart';
 import 'package:flutter_crud/src/blocs/provider.dart';
 import 'package:flutter_crud/src/providers/user_provider.dart';
+import 'package:flutter_crud/src/utils/utils.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -185,18 +186,23 @@ class LoginPage extends StatelessWidget {
           elevation: 0.0,
           color: Colors.deepPurple,
           textColor: Colors.white,
-          onPressed: snapshot.hasData ? () =>_Login(context, bloc) : null,
+          onPressed: snapshot.hasData ? () =>_login(context, bloc) : null,
         );
       },
     );
   }
 
 
-  _Login(BuildContext context,LoginBloc bloc){
+  _login(BuildContext context,LoginBloc bloc) async{
 
-    userProvider.login(bloc.email, bloc.password);
+    Map<String, dynamic> info = await userProvider.login(bloc.email, bloc.password);
 
-    //Navigator.pushReplacementNamed(context, 'home');
+    if (info['ok']) {
+      Navigator.pushReplacementNamed(context, 'home');
+    }else{
+      showAlert(context,'Password or Email is incorrect');
+    }
+
 
   }
 }
