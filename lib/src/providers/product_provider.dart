@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_crud/src/user_preferences/user_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime_type/mime_type.dart';
@@ -42,6 +43,11 @@ class ProductProvider {
     final List<ProductModel> products = new List();
 
     if (decodedData == null) return [];
+
+    if (decodedData['error'] != null) {
+      return [];
+      //Navigator.pushReplacementNamed(context, 'login');
+    }
 
     decodedData.forEach((id, product) {
       final prodTemp = ProductModel.fromJson(product);

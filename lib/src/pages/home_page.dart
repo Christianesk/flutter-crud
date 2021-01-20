@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_crud/src/blocs/provider.dart';
 import 'package:flutter_crud/src/models/product_model.dart';
-import 'package:flutter_crud/src/providers/product_provider.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -9,17 +8,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final productProvider = new ProductProvider();
 
   @override
   Widget build(BuildContext context) {
-    final bloc = Provider.of(context);
+
+    final productBloc = Provider.productBloc(context);
+    productBloc.getProducts();
 
     return Scaffold(
       appBar: AppBar(
         title: Text('Home'),
       ),
-      body: _createList(),
+      body: _createList(productBloc),
       floatingActionButton: _createButton(context),
     );
   }
@@ -33,27 +33,28 @@ class _HomePageState extends State<HomePage> {
             }));
   }
 
-  Widget _createList() {
-    return FutureBuilder(
-      future: productProvider.getProducts(),
-      builder:
-          (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
+  Widget _createList(ProductBloc productBloc) {
+
+    return StreamBuilder(
+      stream: productBloc.productStream,
+      builder:  (BuildContext context, AsyncSnapshot<List<ProductModel>> snapshot) {
         if (snapshot.hasData) {
           final products = snapshot.data;
 
           return ListView.builder(
             itemCount: products.length,
             itemBuilder: (context, index) =>
-                _createItem(context, products[index]),
+                _createItem(context, products[index],productBloc),
           );
         } else {
           return Center(child: CircularProgressIndicator());
         }
       },
     );
+
   }
 
-  Widget _createItem(BuildContext context, ProductModel product) {
+  Widget _createItem(BuildContext context, ProductModel product,ProductBloc productBloc) {
     return Dismissible(
         key: UniqueKey(),
         background: Container(
@@ -69,9 +70,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
         ),
-        onDismissed: (direction) {
-          productProvider.deleteProduct(product.id);
-        },
+        onDismissed: (direction) => productBloc.deleteProduct(product.id),
         child: Card(
           child: Column(
             children: <Widget>[

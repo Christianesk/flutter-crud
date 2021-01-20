@@ -1,8 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_crud/src/blocs/product_bloc.dart';
+import 'package:flutter_crud/src/blocs/provider.dart';
 import 'package:flutter_crud/src/models/product_model.dart';
-import 'package:flutter_crud/src/providers/product_provider.dart';
 import 'package:flutter_crud/src/utils/utils.dart' as utils;
 import 'package:image_picker/image_picker.dart';
 
@@ -16,16 +17,19 @@ class _ProductPageState extends State<ProductPage> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  ProductBloc productBloc;
   ProductModel product = new ProductModel();
 
   bool _saving = false;
 
   File photo;
 
-  final productProvider = new ProductProvider();
 
   @override
   Widget build(BuildContext context) {
+
+    productBloc = Provider.productBloc(context);
+
     final ProductModel prodData = ModalRoute.of(context).settings.arguments;
 
     if (prodData != null) {
@@ -122,14 +126,14 @@ class _ProductPageState extends State<ProductPage> {
     setState(() => _saving = true);
 
     if (photo != null) {
-      product.photoUrl = await productProvider.uploadImage(photo);
+      product.photoUrl = await productBloc.uploadPhoto(photo);
     }
 
     if (product.id == null) {
-      productProvider.createProduct(product);
+      productBloc.createProduct(product);
       showSnackbar('Saved record!');
     } else {
-      productProvider.editProduct(product);
+      productBloc.editProduct(product);
       showSnackbar('Modified record!');
     }
 
